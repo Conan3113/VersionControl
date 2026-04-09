@@ -1,24 +1,33 @@
 package bg.vcs;
-import bg.vcs.model.Document;
+
 import bg.vcs.repository.SqlRepository;
 import bg.vcs.service.AuthService;
+import bg.vcs.service.AuditService;
 import bg.vcs.service.DocumentService;
+import bg.vcs.model.Document;
+import bg.vcs.model.Status;
 import bg.vcs.model.Version;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        // 1. Инициализация на компонентите
         SqlRepository sqlRepo = new SqlRepository();
         AuthService authService = new AuthService();
+        AuditService auditService = new AuditService();
 
-        DocumentService documentService = new DocumentService(sqlRepo, authService);
+        // DocumentService автоматично зарежда съществуващите данни от SQL
+        DocumentService documentService = new DocumentService(sqlRepo, authService, auditService);
 
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("=== Добре дошли в VCS System 2026 ===");
 
+        // 2. Стартиране на автоматичните тестове (по желание)
+        // Можеш да го коментираш, ако не искаш да се въртят при всяко пускане
+        // DocumentServiceTest.runAllTests(); // Изключено за тестване без MySQL
 
-
+        // 3. Логин система
         System.out.print("Въведете потребителско име (ivan, admin, maria, gosho): ");
         String username = scanner.nextLine();
         authService.login(username);
@@ -31,7 +40,7 @@ public class Main {
         System.out.println("Здравей, " + authService.getCurrentUser().getUsername() +
                 " [" + authService.getCurrentUser().getRole() + "]");
 
-
+        // 4. Главно меню
         boolean running = true;
         while (running) {
             System.out.println("\n--- ГЛАВНО МЕНЮ ---");
@@ -40,6 +49,7 @@ public class Main {
             System.out.println("3. Добавяне на нова версия");
             System.out.println("4. Преглед на документ (история)");
             System.out.println("5. Сравнение на версии (Diff)");
+            System.out.println("6. Рецензиране на версия");
             System.out.println("0. Изход");
             System.out.print("Избор: ");
 
@@ -102,9 +112,24 @@ public class Main {
                         System.out.println(documentService.compareVersions(dId, v1, v2));
                         break;
 
+                    case "6":
+                        System.out.print("ID на документ за рецензия: ");
+                        String reviewDocId = scanner.nextLine();
+                        System.out.print("Номер на версия за рецензия: ");
+                        int reviewVNum = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Статус (APPROVED/REJECTED): ");
+                        Status status = Status.valueOf(scanner.nextLine().toUpperCase());
+                        System.out.print("Коментар (опционално): ");
+                        String comment = scanner.nextLine();
+
+                        documentService.reviewVersion(reviewDocId, reviewVNum, status, comment);
+                        System.out.println("Версията е рецензирана успешно!");
+                        break;
+
                     case "0":
                         running = false;
                         System.out.println("Излизане...");
+                        auditService.printLogs(); // Показваме лога на излизане
                         break;
 
                     default:

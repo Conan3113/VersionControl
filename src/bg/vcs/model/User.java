@@ -1,12 +1,10 @@
 package bg.vcs.model;
 
-import java.io.Serializable;
+
 import java.util.Objects;
 
 
-public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class User {
 
     private String username;
     private Role role;

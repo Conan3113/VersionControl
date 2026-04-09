@@ -11,23 +11,19 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Инициализация на компонентите
+
         SqlRepository sqlRepo = new SqlRepository();
         AuthService authService = new AuthService();
         AuditService auditService = new AuditService();
 
-        // DocumentService автоматично зарежда съществуващите данни от SQL
+
         DocumentService documentService = new DocumentService(sqlRepo, authService, auditService);
 
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("=== Добре дошли в VCS System 2026 ===");
 
-        // 2. Стартиране на автоматичните тестове (по желание)
-        // Можеш да го коментираш, ако не искаш да се въртят при всяко пускане
-        // DocumentServiceTest.runAllTests(); // Изключено за тестване без MySQL
 
-        // 3. Логин система
         System.out.print("Въведете потребителско име (ivan, admin, maria, gosho): ");
         String username = scanner.nextLine();
         authService.login(username);
@@ -40,7 +36,7 @@ public class Main {
         System.out.println("Здравей, " + authService.getCurrentUser().getUsername() +
                 " [" + authService.getCurrentUser().getRole() + "]");
 
-        // 4. Главно меню
+
         boolean running = true;
         while (running) {
             System.out.println("\n--- ГЛАВНО МЕНЮ ---");
@@ -129,7 +125,7 @@ public class Main {
                     case "0":
                         running = false;
                         System.out.println("Излизане...");
-                        auditService.printLogs(); // Показваме лога на излизане
+                        auditService.printLogs();
                         break;
 
                     default:

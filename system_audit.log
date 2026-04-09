@@ -1,0 +1,2 @@
+[2026-04-09 16:33:13] ПОТРЕБИТЕЛ: admin | ДЕЙСТВИЕ: UPDATE_DOCUMENT | ОБЕКТ: ID: 67, New Version: 2
+[2026-04-09 16:35:52] ПОТРЕБИТЕЛ: maria | ДЕЙСТВИЕ: REVIEW_VERSION | ОБЕКТ: Doc: 67, V2 -> APPROVED

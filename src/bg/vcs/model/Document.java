@@ -1,12 +1,12 @@
 package bg.vcs.model;
 
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Document implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Document{
+
 
     private String id;
     private String title;
@@ -22,13 +22,4 @@ public class Document implements Serializable {
     public String getTitle() { return title; }
     public List<Version> getVersions() { return versions; }
 
-
-    public Version getActiveVersion() {
-        for (int i = versions.size() - 1; i >= 0; i--) {
-            if (versions.get(i).getStatus() == Status.APPROVED) {
-                return versions.get(i);
-            }
-        }
-        return null;
-    }
 }

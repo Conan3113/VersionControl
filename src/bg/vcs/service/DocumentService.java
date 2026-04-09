@@ -15,11 +15,10 @@ public class DocumentService {
         this.sqlRepo = sqlRepo;
         this.authService = authService;
         this.auditService = auditService;
-        this.documents = sqlRepo.loadAll(); // Зареждаме всичко от SQL при старт
+        this.documents = sqlRepo.loadAll(); 
     }
 
     // 1. СЪЗДАВАНЕ
-    // Добави 'throws UnauthorizedException' в сигнатурата
     public void createDocument(String id, String title, String content) throws UnauthorizedException {
         User currentUser = authService.getCurrentUser();
         String username = currentUser.getUsername();

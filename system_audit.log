@@ -1,2 +1,9 @@
 [2026-04-09 16:33:13] ПОТРЕБИТЕЛ: admin | ДЕЙСТВИЕ: UPDATE_DOCUMENT | ОБЕКТ: ID: 67, New Version: 2
 [2026-04-09 16:35:52] ПОТРЕБИТЕЛ: maria | ДЕЙСТВИЕ: REVIEW_VERSION | ОБЕКТ: Doc: 67, V2 -> APPROVED
+[2026-04-09 17:26:40] ПОТРЕБИТЕЛ: ivan | ДЕЙСТВИЕ: CREATE_DOCUMENT | ОБЕКТ: ID: TEST_DOC
+[2026-04-09 17:26:40] ПОТРЕБИТЕЛ: ivan | ДЕЙСТВИЕ: CREATE_DOCUMENT | ОБЕКТ: ID: UPDATE_TEST
+[2026-04-09 17:26:40] ПОТРЕБИТЕЛ: ivan | ДЕЙСТВИЕ: UPDATE_DOCUMENT | ОБЕКТ: ID: UPDATE_TEST, New Version: 2
+[2026-04-09 17:26:40] ПОТРЕБИТЕЛ: ivan | ДЕЙСТВИЕ: CREATE_DOCUMENT | ОБЕКТ: ID: REVIEW_TEST
+[2026-04-09 17:26:40] ПОТРЕБИТЕЛ: maria | ДЕЙСТВИЕ: REVIEW_VERSION | ОБЕКТ: Doc: REVIEW_TEST, V1 -> APPROVED
+[2026-04-09 17:26:41] ПОТРЕБИТЕЛ: ivan | ДЕЙСТВИЕ: CREATE_DOCUMENT | ОБЕКТ: ID: COMPARE_TEST
+[2026-04-09 17:26:41] ПОТРЕБИТЕЛ: ivan | ДЕЙСТВИЕ: UPDATE_DOCUMENT | ОБЕКТ: ID: COMPARE_TEST, New Version: 2

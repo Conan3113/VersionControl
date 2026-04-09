@@ -8,9 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Сервиз за записване на одит лог (история на действията).
- */
 public class AuditService {
     private List<String> logs = new ArrayList<>();
     private static final String AUDIT_FILE = "system_audit.log";
@@ -22,7 +19,7 @@ public class AuditService {
         
         logs.add(entry);
         
-        // Запис във външен текстов файл
+
         try (PrintWriter out = new PrintWriter(new FileWriter(AUDIT_FILE, true))) {
             out.println(entry);
         } catch (IOException e) {

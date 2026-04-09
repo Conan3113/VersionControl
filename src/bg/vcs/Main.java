@@ -4,6 +4,7 @@ import bg.vcs.repository.SqlRepository;
 import bg.vcs.service.AuthService;
 import bg.vcs.service.AuditService;
 import bg.vcs.service.DocumentService;
+import bg.vcs.service.DocumentServiceTest;
 import bg.vcs.model.Document;
 import bg.vcs.model.Status;
 import bg.vcs.model.Version;
@@ -46,6 +47,7 @@ public class Main {
             System.out.println("4. Преглед на документ (история)");
             System.out.println("5. Сравнение на версии (Diff)");
             System.out.println("6. Рецензиране на версия");
+            System.out.println("7. Изпълнение на тестове");
             System.out.println("0. Изход");
             System.out.print("Избор: ");
 
@@ -120,6 +122,11 @@ public class Main {
 
                         documentService.reviewVersion(reviewDocId, reviewVNum, status, comment);
                         System.out.println("Версията е рецензирана успешно!");
+                        break;
+
+                    case "7":
+                        System.out.println("\n=== ИЗПЪЛНЕНИЕ НА ТЕСТОВЕТЕ ===");
+                        DocumentServiceTest.runAllTests();
                         break;
 
                     case "0":

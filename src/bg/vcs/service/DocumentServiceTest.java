@@ -26,8 +26,8 @@ public class DocumentServiceTest {
     private static void testCreateDocument() {
         System.out.println("\n--- Тест 1: Създаване на документ ---");
         
-        SqlRepository mockRepo = new SqlRepository();
         AuthService authService = new AuthService();
+        SqlRepository mockRepo = new SqlRepository(authService);
         AuditService auditService = new AuditService();
         DocumentService docService = new DocumentService(mockRepo, authService, auditService);
         
@@ -50,8 +50,8 @@ public class DocumentServiceTest {
     private static void testUpdateDocument() {
         System.out.println("\n--- Тест 2: Обновяване на документ ---");
         
-        SqlRepository mockRepo = new SqlRepository();
         AuthService authService = new AuthService();
+        SqlRepository mockRepo = new SqlRepository(authService);
         AuditService auditService = new AuditService();
         DocumentService docService = new DocumentService(mockRepo, authService, auditService);
         
@@ -82,8 +82,8 @@ public class DocumentServiceTest {
     private static void testReviewVersion() {
         System.out.println("\n--- Тест 3: Рецензиране на версия ---");
         
-        SqlRepository mockRepo = new SqlRepository();
         AuthService authService = new AuthService();
+        SqlRepository mockRepo = new SqlRepository(authService);
         AuditService auditService = new AuditService();
         DocumentService docService = new DocumentService(mockRepo, authService, auditService);
         
@@ -114,8 +114,8 @@ public class DocumentServiceTest {
     private static void testUnauthorizedActions() {
         System.out.println("\n--- Тест 4: Неоторизирани действия ---");
         
-        SqlRepository mockRepo = new SqlRepository();
         AuthService authService = new AuthService();
+        SqlRepository mockRepo = new SqlRepository(authService);
         AuditService auditService = new AuditService();
         DocumentService docService = new DocumentService(mockRepo, authService, auditService);
         
@@ -135,8 +135,8 @@ public class DocumentServiceTest {
     private static void testCompareVersions() {
         System.out.println("\n--- Тест 5: Сравнение на версии ---");
         
-        SqlRepository mockRepo = new SqlRepository();
         AuthService authService = new AuthService();
+        SqlRepository mockRepo = new SqlRepository(authService);
         AuditService auditService = new AuditService();
         DocumentService docService = new DocumentService(mockRepo, authService, auditService);
         

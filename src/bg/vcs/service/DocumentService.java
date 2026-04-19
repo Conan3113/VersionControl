@@ -35,6 +35,7 @@ public class DocumentService {
         documents.put(id, doc);
         sqlRepo.syncDocument(doc);
         auditService.log(username, "CREATE_DOCUMENT", "ID: " + id);
+        refreshDocuments(); // Refresh all clients
     }
 
     // 2. ОБНОВЯВАНЕ (Нова версия)
@@ -52,6 +53,7 @@ public class DocumentService {
             doc.getVersions().add(newVersion);
             sqlRepo.syncDocument(doc);
             auditService.log(currentUser.getUsername(), "UPDATE_DOCUMENT", "ID: " + id + ", New Version: " + nextVersionNum);
+            refreshDocuments(); // Refresh all clients
         }
     }
 
@@ -68,8 +70,9 @@ public class DocumentService {
             v.setStatus(status);
             v.setReviewerComment(comment);
 
-            sqlRepo.syncDocument(doc);
+            sqlRepo.updateVersionStatus(docId, vNum, status, comment);
             auditService.log(currentUser.getUsername(), "REVIEW_VERSION", "Doc: " + docId + ", V" + vNum + " -> " + status);
+            refreshDocuments(); // Refresh to get updated status from database
         }
     }
 
@@ -99,6 +102,12 @@ public class DocumentService {
 
     // 5. ВЗЕМАНЕ НА ВСИЧКИ ДОКУМЕНТИ
     public Collection<Document> getAllDocuments() {
+        refreshDocuments(); // Always refresh to get latest data from database
         return documents.values();
+    }
+    
+    // 6. ОБНОВЯВАНЕ НА ДОКУМЕНТИ В РЕАЛНО ВРЕМЕ
+    public void refreshDocuments() {
+        this.documents = sqlRepo.loadAll();
     }
 }

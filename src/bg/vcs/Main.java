@@ -6,6 +6,7 @@ import bg.vcs.service.AuditService;
 import bg.vcs.service.DocumentService;
 import bg.vcs.service.DocumentServiceTest;
 import bg.vcs.model.Document;
+import bg.vcs.model.Role;
 import bg.vcs.model.Status;
 import bg.vcs.model.Version;
 import java.util.Scanner;
@@ -13,8 +14,9 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        SqlRepository sqlRepo = new SqlRepository();
         AuthService authService = new AuthService();
+        SqlRepository sqlRepo = new SqlRepository(authService);
+        authService.setSqlRepository(sqlRepo); // Set repository for session management
         AuditService auditService = new AuditService();
 
 
@@ -25,18 +27,48 @@ public class Main {
         System.out.println("=== Добре дошли в VCS System 2026 ===");
 
 
-        System.out.print("Въведете потребителско име (ivan, admin, maria, gosho): ");
+        System.out.println("\n--- СЪЗДАВАНЕ НА ПОТРЕБИТЕЛ ---");
+        System.out.print("Въведете потребителско име: ");
         String username = scanner.nextLine();
-        authService.login(username);
-
-        if (authService.getCurrentUser() == null) {
-            System.out.println("Грешен потребител! Програмата спира.");
+        
+        System.out.println("\nИзберете роля:");
+        System.out.println("1. AUTHOR - Може да създава и обновява документи");
+        System.out.println("2. REVIEWER - Може да рецензира документи");
+        System.out.println("3. READER - Може да преглежда документи");
+        System.out.println("4. ADMIN - Пълен достъп");
+        System.out.print("Избор (1-4): ");
+        
+        Role selectedRole = Role.READER; // default
+        try {
+            int roleChoice = Integer.parseInt(scanner.nextLine());
+            switch (roleChoice) {
+                case 1:
+                    selectedRole = Role.AUTHOR;
+                    break;
+                case 2:
+                    selectedRole = Role.REVIEWER;
+                    break;
+                case 3:
+                    selectedRole = Role.READER;
+                    break;
+                case 4:
+                    selectedRole = Role.ADMIN;
+                    break;
+                default:
+                    System.out.println("Невалиден избор. Избрана е роля READER по подразбиране.");
+                    break;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Въведена е невалидна стойност. Избрана е роля READER по подразбиране.");
+        }
+        
+        if (!authService.createUserAndLogin(username, selectedRole)) {
+            System.out.println("Грешка при създаване на потребител! Програмата спира.");
             return;
         }
 
         System.out.println("Здравей, " + authService.getCurrentUser().getUsername() +
                 " [" + authService.getCurrentUser().getRole() + "]");
-
 
         boolean running = true;
         while (running) {
@@ -132,6 +164,7 @@ public class Main {
                     case "0":
                         running = false;
                         System.out.println("Излизане...");
+                        authService.logout(); // Logout user and update database
                         auditService.printLogs();
                         break;
 

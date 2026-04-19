@@ -1,6 +1,7 @@
 package bg.vcs.repository;
 
 import bg.vcs.model.*;
+import bg.vcs.service.AuthService;
 import java.sql.*;
 import java.util.*;
 
@@ -8,6 +9,71 @@ public class SqlRepository {
     private final String URL = "jdbc:mysql://localhost:3306/vcs_system?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private final String USER = "root";
     private final String PASS = "conan3113";
+    private final AuthService authService;
+
+    public SqlRepository(AuthService authService) {
+        this.authService = authService;
+    }
+
+    public void ensureUserExists(String username, String role) {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS)) {
+            ensureUserExists(conn, username, role);
+        } catch (SQLException e) {
+            System.err.println("[SQL] Error ensuring user exists: " + e.getMessage());
+        }
+    }
+
+    private void ensureUserExists(Connection conn, String username, String role) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "INSERT INTO users (username, role) VALUES (?, ?) ON DUPLICATE KEY UPDATE role = ?")) {
+            ps.setString(1, username);
+            ps.setString(2, role);
+            ps.setString(3, role);
+            ps.executeUpdate();
+        }
+    }
+
+    public void setUserOnline(String username) {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS)) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE users SET is_online = TRUE, last_login = CURRENT_TIMESTAMP, session_id = ? WHERE username = ?")) {
+                ps.setString(1, java.util.UUID.randomUUID().toString());
+                ps.setString(2, username);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            System.err.println("[SQL] Error setting user online: " + e.getMessage());
+        }
+    }
+
+    public void setUserOffline(String username) {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS)) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE users SET is_online = FALSE, last_logout = CURRENT_TIMESTAMP, session_id = NULL WHERE username = ?")) {
+                ps.setString(1, username);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            System.err.println("[SQL] Error setting user offline: " + e.getMessage());
+        }
+    }
+
+    public void updateVersionStatus(String docId, int versionNum, Status status, String comment) {
+        System.out.println("[SQL] Updating version status: " + docId + " v" + versionNum + " -> " + status);
+        
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS)) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE document_versions SET status = ?, reviewer_comment = ? WHERE doc_id = ? AND v_number = ?")) {
+                ps.setString(1, status.name());
+                ps.setString(2, comment != null ? comment : "");
+                ps.setString(3, docId);
+                ps.setInt(4, versionNum);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            System.err.println("[SQL] Error updating version status: " + e.getMessage());
+        }
+    }
 
     public void syncDocument(Document doc) {
         System.out.println("[SQL] Опит за запис на документ: " + doc.getId());
@@ -22,6 +88,17 @@ public class SqlRepository {
                  PreparedStatement psV = conn.prepareStatement(
                          "INSERT INTO document_versions (doc_id, v_number, content, author_name, status, reviewer_comment) VALUES (?, ?, ?, ?, ?, ?)")) {
 
+
+                // Ensure current user exists in users table with their role
+                if (authService.getCurrentUser() != null) {
+                    ensureUserExists(conn, authService.getCurrentUser().getUsername(), 
+                                   authService.getCurrentUser().getRole().name());
+                }
+                
+                // Also ensure all authors exist
+                for (Version v : doc.getVersions()) {
+                    ensureUserExists(conn, v.getAuthorName(), "AUTHOR");
+                }
 
                 psD.setString(1, doc.getId());
                 psD.setString(2, doc.getTitle());
